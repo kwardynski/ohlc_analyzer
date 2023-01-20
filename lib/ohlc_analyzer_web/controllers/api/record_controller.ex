@@ -11,13 +11,7 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
     render(conn, "index.json", records: records)
   end
 
-  # def create(conn, %{"record" => record_params}) do
-  def create(conn, record_params) do
-    Application.get_env(:ohcl_analyzer, :env)
-    |> IO.inspect()
-
-    IO.puts("ok")
-
+  def create(conn, %{"record" => record_params}) do
     with {:ok, %Record{} = record} <- Ohlc.create_record(record_params) do
       conn
       |> put_status(:created)
