@@ -21,9 +21,11 @@ defmodule OhlcAnalyzerWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", OhlcAnalyzerWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", OhlcAnalyzerWeb.API do
+    pipe_through :api
+
+    resources "/insert", RecordController
+  end
 
   # Enables LiveDashboard only for development
   #
