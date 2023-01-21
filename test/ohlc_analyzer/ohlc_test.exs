@@ -80,19 +80,20 @@ defmodule OhlcAnalyzer.OhlcTest do
     test "get_records_by_count/0 returns 10 recent records" do
       # Insert 5 records where all values = 2
       for _n <- 1..5 do
-        record_fixture(%{open: 2, high: 2, low: 2, close: 2})
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2, timestamp: DateTime.utc_now})
       end
 
       # Insert 10 records where all values = 1
       # Wait 1 second - see README for explanation
       Process.sleep(1000)
       for _n <- 1..10 do
-        record_fixture(%{open: 1, high: 1, low: 1, close: 1})
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: DateTime.utc_now})
       end
 
       # Retrieve 10 records, assert all records have all values equal to 1
-      Ohlc.get_records_by_count()
-      |> Enum.each(fn(record) ->
+      records = Ohlc.get_records_by_count()
+      assert length(records) == 10
+      Enum.each(records, fn(record) ->
         assert record.open == 1
         assert record.high == 1
         assert record.low == 1
@@ -103,19 +104,20 @@ defmodule OhlcAnalyzer.OhlcTest do
     test "get_records_by_count/1 returns 'count' records" do
       # Insert 5 records where all values = 2
       for _n <- 1..5 do
-        record_fixture(%{open: 2, high: 2, low: 2, close: 2})
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2, timestamp: DateTime.utc_now})
       end
 
       # Insert 5 records where all values = 1
       # Wait 1 second - see README for explanation
       Process.sleep(1000)
       for _n <- 1..5 do
-        record_fixture(%{open: 1, high: 1, low: 1, close: 1})
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: DateTime.utc_now})
       end
 
       # Retrieve 5 records, assert all records have all values equal to 1
-      Ohlc.get_records_by_count(5)
-      |> Enum.each(fn(record) ->
+      records = Ohlc.get_records_by_count(5)
+      assert length(records) == 5
+      Enum.each(records, fn(record) ->
         assert record.open == 1
         assert record.high == 1
         assert record.low == 1

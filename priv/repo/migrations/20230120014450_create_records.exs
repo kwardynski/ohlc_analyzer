@@ -9,8 +9,6 @@ defmodule OhlcAnalyzer.Repo.Migrations.CreateRecords do
       add :high, :float
       add :low, :float
       add :close, :float
-
-      timestamps()
     end
   end
 end

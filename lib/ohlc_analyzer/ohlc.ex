@@ -110,7 +110,7 @@ defmodule OhlcAnalyzer.Ohlc do
     records =
       from(
       r in Record,
-      order_by: [desc:  r.inserted_at],
+      order_by: [desc:  r.timestamp],
       limit: ^count
       )
       |> Repo.all()
