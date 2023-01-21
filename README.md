@@ -28,3 +28,5 @@ Sample Record
 ### Deliverables
 Please commit the relevant code to your GitHub account and share the link
 
+## NOTES
+- explain 1 sec wait times in unit tests
