@@ -8,8 +8,6 @@ defmodule OhlcAnalyzer.Ohlc.Record do
     field :high, :float
     field :low, :float
     field :close, :float
-
-    timestamps()
   end
 
   @doc false

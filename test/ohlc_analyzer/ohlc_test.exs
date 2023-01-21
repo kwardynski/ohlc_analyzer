@@ -76,5 +76,119 @@ defmodule OhlcAnalyzer.OhlcTest do
       record = record_fixture()
       assert %Ecto.Changeset{} = Ohlc.change_record(record)
     end
+
+    test "get_records_by_count/0 returns 10 recent records" do
+      # Insert 5 records where all values = 2
+      for _n <- 1..5 do
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2, timestamp: DateTime.utc_now()})
+      end
+
+      # Insert 10 records where all values = 1
+      # Wait 1 second - see README for explanation
+      Process.sleep(1000)
+
+      for _n <- 1..10 do
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: DateTime.utc_now()})
+      end
+
+      # Retrieve 10 records, assert all records have all values equal to 1
+      records = Ohlc.get_records_by_count()
+      assert length(records) == 10
+
+      Enum.each(records, fn record ->
+        assert record.open == 1
+        assert record.high == 1
+        assert record.low == 1
+        assert record.close == 1
+      end)
+    end
+
+    test "get_records_by_count/1 returns 'count' records" do
+      # Insert 5 records where all values = 2
+      for _n <- 1..5 do
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2, timestamp: DateTime.utc_now()})
+      end
+
+      # Insert 5 records where all values = 1
+      # Wait 1 second - see README for explanation
+      Process.sleep(1000)
+
+      for _n <- 1..5 do
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: DateTime.utc_now()})
+      end
+
+      # Retrieve 5 records, assert all records have all values equal to 1
+      records = Ohlc.get_records_by_count(5)
+      assert length(records) == 5
+
+      Enum.each(records, fn record ->
+        assert record.open == 1
+        assert record.high == 1
+        assert record.low == 1
+        assert record.close == 1
+      end)
+    end
+
+    test "get_records_by_count returns error tuple if less records retreived than requested" do
+      assert {:error, :insufficient_records} = Ohlc.get_records_by_count()
+    end
+
+    test "get_records_by_window/0 returns 1 hour's worth of records" do
+      # Insert a "current" record where all values = 1
+      recent_record_time =
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.add(-900, :second)
+
+      record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: recent_record_time})
+
+      # Insert an "older" record where all values = 2
+      older_record_time =
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.add(-3601, :second)
+
+      record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: older_record_time})
+
+      # Retrieve only the current record
+      records = Ohlc.get_records_by_window()
+      assert length(records) == 1
+
+      [record] = records
+      assert record.open == 1
+      assert record.timestamp == recent_record_time
+    end
+
+    test "get_records_by_window/1 returns 'window' hours' worth of records" do
+      # Insert a "current" record where all values = 1
+      recent_record_time =
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.add(-900, :second)
+
+      record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: recent_record_time})
+
+      # Insert "older" records where all values = 2
+      older_record_time =
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+        |> DateTime.add(-7201, :second)
+
+      for _n <- 1..5 do
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2, timestamp: older_record_time})
+      end
+
+      # Retrieve only the current record
+      records = Ohlc.get_records_by_window(2)
+      assert length(records) == 1
+
+      [record] = records
+      assert record.open == 1
+      assert record.timestamp == recent_record_time
+    end
+
+    test "get_records_by_window returns error tuple if no recordsfound in window" do
+      assert {:error, :insufficient_records} == Ohlc.get_records_by_window()
+    end
   end
 end

@@ -28,3 +28,5 @@ Sample Record
 ### Deliverables
 Please commit the relevant code to your GitHub account and share the link
 
+## NOTES
+- using timestamp as proxy for inserted_at, updated_at
