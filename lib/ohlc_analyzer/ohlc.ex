@@ -109,9 +109,9 @@ defmodule OhlcAnalyzer.Ohlc do
   def get_records_by_count(count \\ 10) do
     records =
       from(
-      r in Record,
-      order_by: [desc:  r.timestamp],
-      limit: ^count
+        r in Record,
+        order_by: [desc: r.timestamp],
+        limit: ^count
       )
       |> Repo.all()
 
@@ -128,5 +128,4 @@ defmodule OhlcAnalyzer.Ohlc do
   def get_records_by_window(_window \\ 60) do
     :ok
   end
-
 end
