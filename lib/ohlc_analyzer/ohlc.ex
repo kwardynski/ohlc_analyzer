@@ -101,4 +101,32 @@ defmodule OhlcAnalyzer.Ohlc do
   def change_record(%Record{} = record, attrs \\ %{}) do
     Record.changeset(record, attrs)
   end
+
+  @doc """
+  Returns the last `count` records added to the repo
+  Defaults to count = 10
+  """
+  def get_records_by_count(count \\ 10) do
+    records =
+      from(
+      r in Record,
+      order_by: [desc:  r.inserted_at],
+      limit: ^count
+      )
+      |> Repo.all()
+
+    case length(records) < count do
+      true -> {:error, :insufficient_records}
+      false -> records
+    end
+  end
+
+  @doc """
+  Returns all records added to the repo within the last `window` time frame, expected in minutes
+  Defaults to window = 10
+  """
+  def get_records_by_window(_window \\ 60) do
+    :ok
+  end
+
 end
