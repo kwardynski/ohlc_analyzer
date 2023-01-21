@@ -76,5 +76,55 @@ defmodule OhlcAnalyzer.OhlcTest do
       record = record_fixture()
       assert %Ecto.Changeset{} = Ohlc.change_record(record)
     end
+
+    test "get_records_by_count/0 returns 10 recent records" do
+      # Insert 5 records where all values = 2
+      for _n <- 1..5 do
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2})
+      end
+
+      # Insert 10 records where all values = 1
+      # Wait 1 second - see README for explanation
+      Process.sleep(1000)
+      for _n <- 1..10 do
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1})
+      end
+
+      # Retrieve 10 records, assert all records have all values equal to 1
+      Ohlc.get_records_by_count()
+      |> Enum.each(fn(record) ->
+        assert record.open == 1
+        assert record.high == 1
+        assert record.low == 1
+        assert record.close == 1
+      end)
+    end
+
+    test "get_records_by_count/1 returns 'count' records" do
+      # Insert 5 records where all values = 2
+      for _n <- 1..5 do
+        record_fixture(%{open: 2, high: 2, low: 2, close: 2})
+      end
+
+      # Insert 5 records where all values = 1
+      # Wait 1 second - see README for explanation
+      Process.sleep(1000)
+      for _n <- 1..5 do
+        record_fixture(%{open: 1, high: 1, low: 1, close: 1})
+      end
+
+      # Retrieve 5 records, assert all records have all values equal to 1
+      Ohlc.get_records_by_count(5)
+      |> Enum.each(fn(record) ->
+        assert record.open == 1
+        assert record.high == 1
+        assert record.low == 1
+        assert record.close == 1
+      end)
+    end
+
+    test "get_records_by_count returns error tuple if less records retreived than requested" do
+      assert {:error, :insufficient_records} = Ohlc.get_records_by_count
+    end
   end
 end
