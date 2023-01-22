@@ -15,11 +15,6 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
 
   tags ["records"]
 
-  def index(conn, _params) do
-    records = Ohlc.list_records()
-    render(conn, "index.json", records: records)
-  end
-
   operation :create,
     summary: "Creates a new OHLC Record",
     request_body: {"Record Response", "application/json", RecordResponse},
@@ -39,22 +34,6 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
   def show(conn, %{"id" => id}) do
     record = Ohlc.get_record!(id)
     render(conn, "show.json", record: record)
-  end
-
-  def update(conn, %{"id" => id, "record" => record_params}) do
-    record = Ohlc.get_record!(id)
-
-    with {:ok, %Record{} = record} <- Ohlc.update_record(record, record_params) do
-      render(conn, "show.json", record: record)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    record = Ohlc.get_record!(id)
-
-    with {:ok, %Record{}} <- Ohlc.delete_record(record) do
-      send_resp(conn, :no_content, "")
-    end
   end
 
   @doc """

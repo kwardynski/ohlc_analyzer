@@ -27,7 +27,7 @@ defmodule OhlcAnalyzerWeb.Router do
     pipe_through :api
 
     get "/openapi", OpenApiSpex.Plug.RenderSpec, []
-    resources "/insert", OhlcAnalyzerWeb.API.RecordController
+    resources "/insert", OhlcAnalyzerWeb.API.RecordController, only: [:create, :show]
     get("/average", OhlcAnalyzerWeb.API.RecordController, :calculate_moving_average)
   end
 
