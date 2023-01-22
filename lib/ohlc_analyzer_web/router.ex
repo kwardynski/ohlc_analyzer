@@ -15,7 +15,7 @@ defmodule OhlcAnalyzerWeb.Router do
     plug OpenApiSpex.Plug.PutApiSpec, module: OhlcAnalyzerWeb.ApiSpec
   end
 
-  scope "/"  do
+  scope "/" do
     pipe_through :browser
 
     get "/", OhlcAnalyzerWeb.PageController, :index
