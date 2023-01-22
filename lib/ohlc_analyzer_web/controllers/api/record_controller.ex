@@ -1,16 +1,31 @@
 defmodule OhlcAnalyzerWeb.API.RecordController do
   use OhlcAnalyzerWeb, :controller
+  use OpenApiSpex.ControllerSpecs
 
   alias OhlcAnalyzer.Math
   alias OhlcAnalyzer.Ohlc
   alias OhlcAnalyzer.Ohlc.Record
 
+  alias OhlcAnalyzerWeb.OpenApiSchemas.ErrorMessage
+  alias OhlcAnalyzerWeb.OpenApiSchemas.MovingAverageRequest
+  alias OhlcAnalyzerWeb.OpenApiSchemas.MovingAverageResponse
+  alias OhlcAnalyzerWeb.OpenApiSchemas.RecordResponse
+
   action_fallback OhlcAnalyzerWeb.FallbackController
+
+  tags ["records"]
 
   def index(conn, _params) do
     records = Ohlc.list_records()
     render(conn, "index.json", records: records)
   end
+
+  operation :create,
+    summary: "Creates a new OHLC Record",
+    request_body: {"Record Response", "application/json", RecordResponse},
+    responses: [
+      ok: {"Record Response", "application/json", RecordResponse}
+    ]
 
   def create(conn, %{"record" => record_params}) do
     with {:ok, %Record{} = record} <- Ohlc.create_record(record_params) do
@@ -55,6 +70,22 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
   the window type (count or time), along with the window size, then matched on in the
   with pipeline to allow the user to configure their request
   """
+  operation :calculate_moving_average,
+    summary: "Calculates the moving average for a group of OHLC Records",
+    parameters: [
+      window: [
+        in: :path,
+        description: "Window for moving average calculation",
+        type: :string,
+        example: "last_10_items or last_1_hour"
+      ]
+    ],
+    request_body: {"Moving Average", "application/json", MovingAverageRequest},
+    responses: %{
+      200 => {"Moving Average", "application/json", MovingAverageResponse},
+      404 => {"Not Found", "application/json", ErrorMessage}
+    }
+
   def calculate_moving_average(conn, %{"window" => "last_10_items"}) do
     window_size = 10
 
