@@ -9,6 +9,6 @@ defmodule OhlcAnalyzerWeb.OpenApiSchemas.ErrorMessage do
     properties: %{
       message: %Schema{type: :string}
     },
-    example: %{"message" => "Not Found"}
+    example: "Not Found"
   })
 end
