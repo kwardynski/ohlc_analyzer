@@ -12,21 +12,23 @@ defmodule OhlcAnalyzerWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: OhlcAnalyzerWeb.ApiSpec
   end
 
-  scope "/", OhlcAnalyzerWeb do
+  scope "/"  do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", OhlcAnalyzerWeb.PageController, :index
+    get "/swaggerui", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", OhlcAnalyzerWeb.API do
+  scope "/api" do
     pipe_through :api
 
-    resources "/insert", RecordController
-
-    get("/average", RecordController, :calculate_moving_average)
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+    resources "/insert", OhlcAnalyzerWeb.API.RecordController
+    get("/average", OhlcAnalyzerWeb.API.RecordController, :calculate_moving_average)
   end
 
   # Enables LiveDashboard only for development
