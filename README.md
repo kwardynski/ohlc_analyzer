@@ -6,7 +6,7 @@ In this assignment, you are tasked with builiding an API that computes a [moving
 ### Requirements
 1. POST `/api/insert` - adds data to the application
 2. GET `/api/average?window=last_10_items` - should return the moving average of the last 10 items
-3. GET `api/average?window=last_1_hour` - should return the moving average of **all items that were inserted to the data store in the past hour**
+3. GET `/api/average?window=last_1_hour` - should return the moving average of **all items that were inserted to the data store in the past hour**
 
 ### Data
 You should create a mock dataset that you can work with for development and testing
@@ -30,3 +30,4 @@ Please commit the relevant code to your GitHub account and share the link
 
 ## NOTES
 - using timestamp as proxy for inserted_at, updated_at
+- moving list length check to controller

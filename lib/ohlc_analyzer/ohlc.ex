@@ -105,44 +105,30 @@ defmodule OhlcAnalyzer.Ohlc do
   @doc """
   Returns the last `count` records added to the repo
   Defaults to count = 10
-  Will return error tuple if insufficient records returned
   """
   def get_records_by_count(count \\ 10) do
-    records =
-      from(
-        r in Record,
-        order_by: [desc: r.timestamp],
-        limit: ^count
-      )
-      |> Repo.all()
-
-    case length(records) < count do
-      true -> {:error, :insufficient_records}
-      false -> records
-    end
+    from(
+      r in Record,
+      order_by: [desc: r.timestamp],
+      limit: ^count
+    )
+    |> Repo.all()
   end
 
   @doc """
   Returns all records added to the repo within the last `window` time frame, expected in hours
   Defaults to window = 1 (hour)
-  Will return error tuple if no records returned
   """
-  def get_records_by_window(window \\ 1) do
+  def get_records_by_time(window \\ 1) do
     current_time = DateTime.utc_now()
     window_size = 3600 * window
     cutoff_time = DateTime.add(current_time, -window_size, :second)
 
-    records =
-      from(
-        r in Record,
-        order_by: [desc: r.timestamp],
-        where: r.timestamp >= ^cutoff_time
-      )
-      |> Repo.all()
-
-    case records do
-      [] -> {:error, :insufficient_records}
-      _ -> records
-    end
+    from(
+      r in Record,
+      order_by: [desc: r.timestamp],
+      where: r.timestamp >= ^cutoff_time
+    )
+    |> Repo.all()
   end
 end

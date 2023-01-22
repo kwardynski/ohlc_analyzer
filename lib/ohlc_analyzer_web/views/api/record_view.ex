@@ -19,4 +19,10 @@ defmodule OhlcAnalyzerWeb.API.RecordView do
       close: record.close
     }
   end
+
+  def render("moving_average.json", %{moving_average: moving_average}) do
+    %{
+      moving_average: moving_average
+    }
+  end
 end
