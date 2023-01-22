@@ -129,11 +129,7 @@ defmodule OhlcAnalyzer.OhlcTest do
       end)
     end
 
-    test "get_records_by_count returns error tuple if less records retreived than requested" do
-      assert {:error, :insufficient_records} = Ohlc.get_records_by_count()
-    end
-
-    test "get_records_by_window/0 returns 1 hour's worth of records" do
+    test "get_records_by_time/0 returns 1 hour's worth of records" do
       # Insert a "current" record where all values = 1
       recent_record_time =
         DateTime.utc_now()
@@ -151,7 +147,7 @@ defmodule OhlcAnalyzer.OhlcTest do
       record_fixture(%{open: 1, high: 1, low: 1, close: 1, timestamp: older_record_time})
 
       # Retrieve only the current record
-      records = Ohlc.get_records_by_window()
+      records = Ohlc.get_records_by_time()
       assert length(records) == 1
 
       [record] = records
@@ -159,7 +155,7 @@ defmodule OhlcAnalyzer.OhlcTest do
       assert record.timestamp == recent_record_time
     end
 
-    test "get_records_by_window/1 returns 'window' hours' worth of records" do
+    test "get_records_by_time/1 returns 'window' hours' worth of records" do
       # Insert a "current" record where all values = 1
       recent_record_time =
         DateTime.utc_now()
@@ -179,16 +175,12 @@ defmodule OhlcAnalyzer.OhlcTest do
       end
 
       # Retrieve only the current record
-      records = Ohlc.get_records_by_window(2)
+      records = Ohlc.get_records_by_time(2)
       assert length(records) == 1
 
       [record] = records
       assert record.open == 1
       assert record.timestamp == recent_record_time
-    end
-
-    test "get_records_by_window returns error tuple if no recordsfound in window" do
-      assert {:error, :insufficient_records} == Ohlc.get_records_by_window()
     end
   end
 end
