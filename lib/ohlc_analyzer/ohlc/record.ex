@@ -3,7 +3,7 @@ defmodule OhlcAnalyzer.Ohlc.Record do
   import Ecto.Changeset
 
   schema "records" do
-    field :timestamp, :utc_datetime
+    field :timestamp, :utc_datetime, default: DateTime.truncate(DateTime.utc_now(), :second)
     field :open, :float
     field :high, :float
     field :low, :float
