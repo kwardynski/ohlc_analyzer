@@ -22,7 +22,7 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
       ok: {"Record Response", "application/json", RecordResponse}
     ]
 
-  def create(conn, %{"record" => record_params}) do
+  def create(conn, record_params) do
     with {:ok, %Record{} = record} <- Ohlc.create_record(record_params) do
       conn
       |> put_status(:created)

@@ -18,7 +18,7 @@ defmodule OhlcAnalyzerWeb.API.RecordControllerTest do
 
   describe "create record" do
     test "renders record when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.record_path(conn, :create), record: @create_attrs)
+      conn = post(conn, Routes.record_path(conn, :create), @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.record_path(conn, :show, id))
@@ -34,7 +34,7 @@ defmodule OhlcAnalyzerWeb.API.RecordControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.record_path(conn, :create), record: @invalid_attrs)
+      conn = post(conn, Routes.record_path(conn, :create), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
