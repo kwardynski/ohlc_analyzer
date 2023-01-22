@@ -25,6 +25,8 @@ defmodule OhlcAnalyzerWeb.Router do
     pipe_through :api
 
     resources "/insert", RecordController
+
+    get("/average", RecordController, :calculate_moving_average)
   end
 
   # Enables LiveDashboard only for development
