@@ -47,7 +47,12 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
 
   Since the filter is a string, later on a parsing function could be introduces to extract
   the window type (count or time), along with the window size, then matched on in the
-  with pipeline to allow the user to configure their request
+  with pipeline to allow the user to configure their request, or the request schema could be changed
+  to something more user friendly, i.e.
+  %{
+    window_type: "count/time",
+    window_size: :float
+  }
   """
   operation :calculate_moving_average,
     summary: "Calculates the moving average for a group of OHLC Records",

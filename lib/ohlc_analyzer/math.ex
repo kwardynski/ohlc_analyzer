@@ -6,7 +6,7 @@ defmodule OhlcAnalyzer.Math do
 
   @doc """
   Calculates the mean of a list of numeric data, rounds to a specified precision
-  Invokes Decimal library to handle with float precision errors
+  Invokes Decimal library to handle float precision errors
   """
   def mean(data, precision \\ 4) when is_list(data) do
     (Enum.sum(data) / length(data))
