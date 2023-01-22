@@ -93,6 +93,85 @@ defmodule OhlcAnalyzerWeb.API.RecordControllerTest do
     end
   end
 
+  describe "calculate_moving_average/2" do
+    setup do
+      %{
+        count_url: "/api/average?window=last_10_items",
+        time_url: "/api/average?window=last_1_hour",
+        invalid_url: "/api/average?window=thisRequestIsInvalid"
+      }
+    end
+
+    test "returns error if request is poorly formed", %{conn: conn, invalid_url: invalid_url} do
+      conn
+      |> get(invalid_url)
+      |> response(400)
+    end
+
+    test "last_10_items request returns error if less than 10 records found", %{
+      conn: conn,
+      count_url: count_url
+    } do
+      # Insert 9 records
+      for _n <- 1..9, do: record_fixture()
+
+      conn
+      |> get(count_url)
+      |> response(404)
+    end
+
+    test "last_1_hour request returns error if 0 records found", %{conn: conn, time_url: time_url} do
+      conn
+      |> get(time_url)
+      |> response(404)
+    end
+
+    test "last_10_items request returns correct average if 10 records found", %{
+      conn: conn,
+      count_url: count_url
+    } do
+      # Insert 10 records
+      for _n <- 1..10 do
+        record_fixture(%{open: 1.1, high: 2.2, low: 3.3, close: 4.4})
+      end
+
+      response =
+        conn
+        |> get(count_url)
+        |> json_response(200)
+
+      assert response == %{"moving_average" => 2.75}
+    end
+
+    test "last_1_hour request returns correct average if >1 record found", %{
+      conn: conn,
+      time_url: time_url
+    } do
+      # Insert 5 "older" records
+      for _n <- 1..5 do
+        record_fixture(%{timestamp: ~U[2021-01-01 00:00:00Z]})
+      end
+
+      # Insert 2 "current" records
+      for _n <- 1..10 do
+        record_fixture(%{
+          open: 1.1,
+          high: 2.2,
+          low: 3.3,
+          close: 4.4,
+          timestamp: DateTime.utc_now()
+        })
+      end
+
+      response =
+        conn
+        |> get(time_url)
+        |> json_response(200)
+
+      assert response == %{"moving_average" => 2.75}
+    end
+  end
+
   defp create_record(_) do
     record = record_fixture()
     %{record: record}
