@@ -5,12 +5,12 @@ defmodule OhlcAnalyzerWeb.OpenApiSchemas.Record do
 
   OpenApiSpex.schema(%{
     title: "Record",
-    description: "An OHLC record",
+    description: "An OHLC Record",
     type: :object,
     properties: %{
       timestamp: %Schema{
         type: :string,
-        description: "Timestamp associated with the record",
+        description: "Timestamp associated with the Record",
         format: :"date-time"
       },
       open: %Schema{type: :float, description: "Record's OPENING value"},

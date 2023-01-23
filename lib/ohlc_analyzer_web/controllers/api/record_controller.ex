@@ -15,11 +15,6 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
 
   tags ["records"]
 
-  def index(conn, _params) do
-    records = Ohlc.list_records()
-    render(conn, "index.json", records: records)
-  end
-
   operation :create,
     summary: "Creates a new OHLC Record",
     request_body: {"Record Response", "application/json", RecordResponse},
@@ -27,7 +22,7 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
       ok: {"Record Response", "application/json", RecordResponse}
     ]
 
-  def create(conn, %{"record" => record_params}) do
+  def create(conn, record_params) do
     with {:ok, %Record{} = record} <- Ohlc.create_record(record_params) do
       conn
       |> put_status(:created)
@@ -41,22 +36,6 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
     render(conn, "show.json", record: record)
   end
 
-  def update(conn, %{"id" => id, "record" => record_params}) do
-    record = Ohlc.get_record!(id)
-
-    with {:ok, %Record{} = record} <- Ohlc.update_record(record, record_params) do
-      render(conn, "show.json", record: record)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    record = Ohlc.get_record!(id)
-
-    with {:ok, %Record{}} <- Ohlc.delete_record(record) do
-      send_resp(conn, :no_content, "")
-    end
-  end
-
   @doc """
   Calculates the moving average for the requested window of OHLC Records
   In the interest of preventing over-optimization and fulfilling the assignment request, this
@@ -68,7 +47,12 @@ defmodule OhlcAnalyzerWeb.API.RecordController do
 
   Since the filter is a string, later on a parsing function could be introduces to extract
   the window type (count or time), along with the window size, then matched on in the
-  with pipeline to allow the user to configure their request
+  with pipeline to allow the user to configure their request, or the request schema could be changed
+  to something more user friendly, i.e.
+  %{
+    window_type: "count/time",
+    window_size: :float
+  }
   """
   operation :calculate_moving_average,
     summary: "Calculates the moving average for a group of OHLC Records",
